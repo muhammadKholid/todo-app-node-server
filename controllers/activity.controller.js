@@ -26,7 +26,7 @@ exports.list = async (req, res) => {
     let listAct = await Activity.findAll({
       where : {email : decode},
     });
-    res.status(200).send({total : listAct ? listAct.length : 0, data: listAct});
+    res.status(200).send({total : listAct ? listAct.length : 0, limit: 1000, skip: 0, data: listAct});
   } catch (err) {
     console.log(err);
     res.status(500).send({message : "Internal server error"});
@@ -41,7 +41,7 @@ exports.detail = async (req, res) => {
         ],
     });
     if(!act){
-      res.status(404).send({message: "datas not found", status : 404})
+      res.status(404).send({name: "NotFound",message: "datas not found", code : 404, className: "not-found", errors: {}})
     };
 
     res.status(200).send({
@@ -68,8 +68,14 @@ exports.update = async (req, res) => {
       email : req.body.email ? req.body.email : findData.email,
       updatedAt : new Date(),
     };
-    await Activity.update(newData, {where : {id : req.params.id}});
-    res.status(200).send({message : "succesfully update activity."});
+    const updateData = await Activity.update(newData, {where : {id : req.params.id}});
+    res.status(200).send({
+      id: findData.id,
+      title : newData.title,
+      email : newData.email,
+      created_at : findData.createdAt,
+      updated_at : findData.updatedAt
+    });
   } catch (err) {
     console.log(err);
     res.status(500).send({message : "Internal server error"});

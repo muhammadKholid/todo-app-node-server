@@ -27,7 +27,7 @@ db.sequelize.sync();
 // active file-server
 app.use(express.static('./public'));
 
-app.use('/api', require('./routers'));
+app.use('/', require('./routers'));
 
 app.get('/', (req, res) => {
   res.status(200).send({
@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
 });
 
 // set port, listen for requests
-const PORT =  process.env.NODE_DOCKER_PORT || 8080;
+const PORT =  process.env.NODE_DOCKER_PORT || 3030;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
