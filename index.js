@@ -1,16 +1,17 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
 
-require('dotenv').config();
-
 const db = require('./models/index');
 
 const corsOptions = {
   origin: true,
 };
+
+const config = require("./config");
 
 app.use(cors(corsOptions));
 
@@ -26,17 +27,17 @@ db.sequelize.sync();
 // active file-server
 app.use(express.static('./public'));
 
-
 app.use('/api', require('./routers'));
 
 app.get('/', (req, res) => {
   res.status(200).send({
     message: 'wellcome to todo-app',
+    version: "v1.0.3"
   });
 });
 
 // set port, listen for requests
-const PORT = process.env.PORT || 8080;
+const PORT =  process.env.NODE_DOCKER_PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });

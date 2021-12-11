@@ -13,16 +13,17 @@ exports.create = async(req, res) => {
   }
 }
 
-exports.list = async (_, res) => {
+exports.list = async (req, res) => {
   try {
     let listTodo = await Todo.findAll(
       {
+        where : {activity_group_id : req.query.activity_group_id},
         include : [
           {model : Activity, as: "activity"}
         ]
       }
     );
-    res.status(200).send({status : 200, data: listTodo});
+    res.status(200).send({total : listTodo ? listTodo.length : 0, data: listTodo});
   } catch (err) {
     console.log(err);
     res.status(500).send({message : "Internal server error"});
@@ -36,7 +37,20 @@ exports.detail = async (req, res) => {
           {model : Activity, as: "activity"}
         ]
     });
-    res.status(200).send({status : 200, data: todo});
+
+    if(!todo){
+      res.status(404).send({message: "datas not found", status : 404})
+    };
+
+    res.status(200).send({
+      id : todo.id,
+      title : todo.title,
+      priority : todo.priority,
+      is_active : todo.is_active,
+      activity_group_id : todo.activity_group_id,
+      created_at : todo.createdAt,
+      from_activity : todo.activity
+    });
   } catch (err) {
     console.log(err);
     res.status(500).send({message : "Internal server error"});
@@ -46,6 +60,10 @@ exports.detail = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     let findData = await Todo.findOne({where : {id : req.params.id}});
+    if(!findData){
+      res.status(404).send({message: "datas not found", status : 404})
+    };
+
     let newData = {
       priority : req.body.priority ? req.body.priority : findData.priority,
       is_active : req.body.is_active ? req.body.is_active : findData.is_active,
