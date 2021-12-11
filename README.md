@@ -20,3 +20,7 @@ if you wanna check log from dockerimage
 - run ```docker ps```
 - copy the container ID
 - run ```docker logs <container ID>```
+
+
+## Attention
+always check file config.js. it is defined whether run from local or from docker image port
